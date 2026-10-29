@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assembly: meet people in person</title>
+  <meta name="description" content="Assembly helps you host or join small, in-person gatherings near you: a pickup game, a coffee, a board game night. See what's happening nearby, join, and show up.">
+  <meta name="theme-color" content="#7C4DEB">
+  <meta property="og:title" content="Assembly: meet people in person">
+  <meta property="og:description" content="Host or join small, in-person gatherings near you.">
+  <meta property="og:type" content="website">
+  <!-- TODO: add <meta property="og:image" content="https://YOUR-DOMAIN/og.png"> and <link rel="icon" href="/favicon.png"> -->
+  <style>
+    :root {
+      --brand: #7C4DEB;
+      --brand-ink: #5B33C4;
+      --text: #1b1530;
+      --muted: #6b6580;
+      --card: #ffffff;
+      --hairline: rgba(27, 21, 48, 0.09);
+      --shadow: 0 6px 22px rgba(60, 30, 120, 0.08);
+      --canvas-a: #fde9d9;
+      --canvas-b: #fbd9e6;
+      --canvas-c: #e2dcfb;
+      --chip: rgba(124, 77, 235, 0.1);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --brand: #9B78F5;
+        --brand-ink: #b9a0ff;
+        --text: #f4f1fb;
+        --muted: #a8a1bd;
+        --card: #1d1830;
+        --hairline: rgba(255, 255, 255, 0.12);
+        --shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+        --canvas-a: #2a1238;
+        --canvas-b: #3a1442;
+        --canvas-c: #1a1b4a;
+        --chip: rgba(155, 120, 245, 0.18);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      background:
+        radial-gradient(60% 50% at 0% 0%, var(--canvas-a) 0%, transparent 70%),
+        radial-gradient(60% 55% at 100% 20%, var(--canvas-c) 0%, transparent 70%),
+        radial-gradient(70% 60% at 40% 100%, var(--canvas-b) 0%, transparent 70%),
+        var(--canvas-b);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+    a { color: var(--brand-ink); }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 22px; }
+
+    /* Header */
+    header { padding: 22px 0; }
+    header .wrap { display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; color: var(--text); text-decoration: none; }
+    .logo span { color: var(--brand); }
+    nav a { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; margin-left: 22px; }
+    nav a:hover { color: var(--text); }
+
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; padding: 48px 0 72px; }
+    h1 { font-size: clamp(2.4rem, 6vw, 4rem); line-height: 1.04; letter-spacing: -0.035em; margin: 0 0 18px; font-weight: 800; }
+    h1 em { font-style: normal; color: var(--brand); }
+    .lead { font-size: 1.2rem; color: var(--muted); max-width: 34ch; margin: 0 0 28px; }
+    .button {
+      display: inline-block; background: var(--brand); color: #fff; text-decoration: none; font-weight: 700;
+      padding: 14px 24px; border-radius: 999px; box-shadow: 0 8px 22px rgba(124, 77, 235, 0.35);
+    }
+    .button:hover { filter: brightness(1.06); }
+    .note { display: block; margin-top: 12px; font-size: 0.9rem; color: var(--muted); }
+
+    /* Sample cards (what the app's list looks like) */
+    .stack { display: grid; gap: 14px; }
+    .card {
+      background: var(--card); border: 1px solid var(--hairline); border-radius: 20px; box-shadow: var(--shadow);
+      padding: 14px; display: flex; gap: 12px;
+    }
+    .time { width: 58px; flex: none; }
+    .time b { display: block; font-size: 1.2rem; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+    .time small { display: block; color: var(--muted); font-weight: 600; font-size: 0.72rem; }
+    .time i { display: block; font-style: normal; font-size: 0.78rem; margin-top: 4px; }
+    .bar { width: 3px; border-radius: 3px; flex: none; }
+    .body { min-width: 0; flex: 1; }
+    .body h3 { margin: 0 0 3px; font-size: 1.05rem; letter-spacing: -0.01em; }
+    .body p { margin: 0 0 8px; color: var(--muted); font-size: 0.92rem; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.85rem; color: var(--muted); }
+    .host { display: flex; align-items: center; gap: 8px; }
+    .avatar { width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 0.7rem; font-weight: 700; display: grid; place-items: center; }
+    .few { color: #b4580b; font-weight: 700; }
+    @media (prefers-color-scheme: dark) { .few { color: #ffb36b; } }
+
+    /* Sections */
+    section { padding: 56px 0; }
+    h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 12px; }
+    .sub { color: var(--muted); font-size: 1.1rem; max-width: 52ch; margin: 0 0 32px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .panel { background: var(--card); border: 1px solid var(--hairline); border-radius: 22px; padding: 22px; box-shadow: var(--shadow); }
+    .panel .n {
+      display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+      background: var(--chip); color: var(--brand-ink); font-weight: 800; margin-bottom: 12px;
+    }
+    .panel h3 { margin: 0 0 6px; font-size: 1.15rem; letter-spacing: -0.015em; }
+    .panel p { margin: 0; color: var(--muted); }
+    .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .chips li { background: var(--card); border: 1px solid var(--hairline); border-radius: 999px; padding: 8px 16px; font-weight: 600; font-size: 0.95rem; }
+
+    .cta { text-align: center; padding: 72px 0; }
+    .cta p { color: var(--muted); font-size: 1.1rem; margin: 0 0 24px; }
+
+    footer { border-top: 1px solid var(--hairline); padding: 28px 0 44px; color: var(--muted); font-size: 0.9rem; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
+    footer a { color: var(--muted); margin-left: 18px; }
+    footer a:first-child { margin-left: 0; }
+
+    @media (max-width: 820px) {
+      .hero { grid-template-columns: 1fr; gap: 36px; padding-top: 24px; }
+      .grid3, .features { grid-template-columns: 1fr; }
+      nav a:not(.keep) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <a class="logo" href="#top" id="top">Assem<span>bly</span></a>
+      <nav aria-label="Main">
+        <a href="#how">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a class="keep" href="#get">Get the app</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap hero">
+      <div>
+        <h1>Meet people <em>in person</em>.</h1>
+        <p class="lead">Host a gathering or join one near you: a pickup game, a coffee, a board game night. Pick one, show up, say hi.</p>
+        <!-- TODO: replace # with your App Store link when the app is live -->
+        <a class="button" href="#get">Get Assembly for iPhone</a>
+        <span class="note">Free. Coming soon to the App Store.</span>
+      </div>
+
+      <div class="stack" aria-label="Examples of Assemblies nearby">
+        <div class="card">
+          <div class="time"><b>6:30</b><small>PM</small><i style="color:#b3365f">Today</i></div>
+          <div class="bar" style="background:#e0457b"></div>
+          <div class="body">
+            <h3>Rooftop hangout</h3>
+            <p>About 2 mi away</p>
+            <div class="row"><span class="host"><span class="avatar" style="background:#ef7351">L</span>By Leo</span><span>3 going</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="time"><b>8:30</b><small>AM</small><i style="color:#2f55c8">Tomorrow</i></div>
+          <div class="bar" style="background:#3f6df0"></div>
+          <div class="body">
+            <h3>Pickup soccer</h3>
+            <p>Taylor Farm Park · 3.75 mi</p>
+            <div class="row"><span class="host"><span class="avatar" style="background:#b36ae0">G</span>By Gus</span><span class="few">2 left</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="time"><b>7:00</b><small>PM</small><i style="color:#2d8a4e">Sat, Oct 31</i></div>
+          <div class="bar" style="background:#3aa35f"></div>
+          <div class="body">
+            <h3>Trail hike</h3>
+            <p>Weir Farm · 5.5 mi</p>
+            <div class="row"><span class="host"><span class="avatar" style="background:#5b8cf0">K</span>By Kira</span><span>5 going</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="how">
+      <div class="wrap">
+        <h2>How it works</h2>
+        <p class="sub">No feeds to scroll, no profiles to swipe. Just things that are actually happening near you.</p>
+        <div class="grid3">
+          <div class="panel"><span class="n">1</span><h3>See what's nearby</h3><p>Browse a map or a list of Assemblies within a few miles, by time and by kind.</p></div>
+          <div class="panel"><span class="n">2</span><h3>Join in one tap</h3><p>Join right away, or ask the host if they like to approve people first. Chat with the group before you go.</p></div>
+          <div class="panel"><span class="n">3</span><h3>Show up</h3><p>Meet at the place and time. Or host your own: pick a spot, a time and how many seats.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>For all kinds of plans</h2>
+        <p class="sub">Small and casual, from a morning run to a night in with friends of friends.</p>
+        <ul class="chips">
+          <li>Social</li><li>Food &amp; drink</li><li>Sports &amp; fitness</li><li>Outdoors</li><li>Games</li>
+          <li>Music &amp; arts</li><li>Learning</li><li>Work together</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="privacy">
+      <div class="wrap">
+        <h2>Built to keep you safe</h2>
+        <p class="sub">Meeting new people should feel comfortable. Assembly is designed around that.</p>
+        <div class="features">
+          <div class="panel"><h3>No live location sharing</h3><p>Nobody can see where you are. Your location is only used on your phone to show what's near you.</p></div>
+          <div class="panel"><h3>Hosts choose what to share</h3><p>Show the exact venue to everyone, or only an approximate area until someone joins.</p></div>
+          <div class="panel"><h3>Block and report</h3><p>Block anyone, and it works both ways. Report anything that doesn't feel right.</p></div>
+          <div class="panel"><h3>Sign in with Apple</h3><p>Sign in without handing over your email. You choose the name others see.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="get">
+      <div class="wrap">
+        <h2>Find your next plan</h2>
+        <p>Assembly is coming soon to iPhone.</p>
+        <!-- TODO: replace # with your App Store link when the app is live -->
+        <a class="button" href="#">Download on the App Store</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>&copy; <script>document.write(new Date().getFullYear())</script> Assembly</span>
+      <span>
+        <!-- TODO: point these at your real pages and address -->
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="mailto:hello@example.com">Contact</a>
+      </span>
+    </div>
+  </footer>
+</body>
+</html>
